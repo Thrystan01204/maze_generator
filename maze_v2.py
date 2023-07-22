@@ -79,10 +79,9 @@ def generate_selectable_walls(maze_grid):
     return selectable_walls
 
 
-def make_path(maze_grid, source_id, target_id):
-    maze_grid["cell_ids"] = [
-        source_id if cell_id == target_id else cell_id
-        for cell_id in maze_grid["cell_ids"]
+def make_path(maze_grid, source_id, target_id, ids="cell_ids"):
+    maze_grid[ids] = [
+        source_id if cell_id == target_id else cell_id for cell_id in maze_grid[ids]
     ]
     return maze_grid
 
@@ -103,12 +102,11 @@ def maze(maze_width, maze_height):
             ]
             if is_breakable(my_grid, wall_line, wall_column, "vertical"):
                 my_grid["vertical_walls"][wall_id] = False
-                # my_grid = make_path(
-                #     my_grid,
-                #     source_id,
-                #     target_id,
-                # )
-                my_grid["np_cell_ids"][my_grid["np_cell_ids"] == source_id] = target_id
+                my_grid = make_path(
+                    my_grid,
+                    source_id,
+                    target_id,
+                )
         else:
             wall_line = wall_id // maze_width
             wall_column = wall_id - wall_line * maze_width
@@ -118,16 +116,21 @@ def maze(maze_width, maze_height):
             ]
             if is_breakable(my_grid, wall_line, wall_column, "horizontal"):
                 my_grid["horizontal_walls"][wall_id] = False
-                # my_grid = make_path(
-                #     my_grid,
-                #     source_id,
-                #     target_id,
-                # )
-                my_grid["np_cell_ids"][my_grid["np_cell_ids"] == source_id] = target_id
+                my_grid = make_path(
+                    my_grid,
+                    source_id,
+                    target_id,
+                )
         selectable_walls.remove(f"{random_wall[0]}_{random_wall[1]}")
     return my_grid
 
 
 start_time = process_time()
-the_grid = maze(200, 200)
+the_grid = maze(3, 3)
+print_grid(
+    the_grid["width"],
+    the_grid["height"],
+    the_grid["vertical_walls"],
+    the_grid["horizontal_walls"],
+)
 print(f"Time : {process_time() - start_time} s")
