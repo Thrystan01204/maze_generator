@@ -1,55 +1,40 @@
 from random import randint
 from time import process_time
 
-import numpy as np
-
-
-def print_closed_h_walls(width):
-    for _ in range(width):
-        print("+---", end="")
-    print("+")
-
-
-def print_h_walls(width, line, h_walls):
-    for j in range(width):
-        if h_walls[width * line + j]:
-            print("+---", end="")
-        else:
-            print("+   ", end="")
-    print("+")
-
-
-def print_v_walls(width, line, v_walls):
-    print("|", end="")
-    for j in range(width - 1):
-        if v_walls[(width - 1) * line + j]:
-            print("   |", end="")
-        else:
-            print("    ", end="")
-    print("   |")
-
-
-def print_grid(width, height, v_walls, h_walls):
-    print_closed_h_walls(width)
-    for i in range(height - 1):
-        print_v_walls(width, i, v_walls)
-        print_h_walls(width, i, h_walls)
-    print_v_walls(width, height - 1, v_walls)
-    print_closed_h_walls(width)
+import print_maze as pm
 
 
 def generate_grid(width, height):
+    """Generate a grid and the walls for of the maze
+
+    Args:
+        width (int): width of the maze
+        height (int): height of the maze
+
+    Returns:
+        dict: a dict of the cells ids, the walls, the height and the width of the maze
+    """
     return {
         "height": height,
         "width": width,
         "cell_ids": list(range(width * height)),
-        "np_cell_ids": np.arange(width * height),
         "horizontal_walls": [True for _ in range((height - 1) * width)],
         "vertical_walls": [True for _ in range(height * (width - 1))],
     }
 
 
 def get_cell_id(maze_grid, width, line, column):
+    """compute the id of a cell based on her line and column
+
+    Args:
+        maze_grid (dict): grid of the maze
+        width (int): width of the maze
+        line (int): line of the wall
+        column (int): column of the wall
+
+    Returns:
+        int: id of the cell
+    """
     return maze_grid["cell_ids"][width * line + column]
 
 
@@ -90,17 +75,16 @@ def maze(maze_width, maze_height):
     my_grid = generate_grid(maze_height, maze_width)
     selectable_walls = generate_selectable_walls(my_grid)
     while len(selectable_walls) > 0:
+        cells_ids = my_grid["cell_ids"]
         random_wall = selectable_walls[randint(0, len(selectable_walls) - 1)].split("_")
         wall_type = random_wall[0]
         wall_id = int(random_wall[1])
         if wall_type == "v":
             wall_line = wall_id // (maze_width - 1)
             wall_column = wall_id - wall_line * (maze_width - 1)
-            source_id = my_grid["cell_ids"][wall_line * my_grid["width"] + wall_column]
-            target_id = my_grid["cell_ids"][
-                wall_line * my_grid["width"] + wall_column + 1
-            ]
             if is_breakable(my_grid, wall_line, wall_column, "vertical"):
+                source_id = cells_ids[wall_line * maze_width + wall_column]
+                target_id = cells_ids[wall_line * maze_width + wall_column + 1]
                 my_grid["vertical_walls"][wall_id] = False
                 my_grid = make_path(
                     my_grid,
@@ -110,27 +94,26 @@ def maze(maze_width, maze_height):
         else:
             wall_line = wall_id // maze_width
             wall_column = wall_id - wall_line * maze_width
-            source_id = my_grid["cell_ids"][wall_line * my_grid["width"] + wall_column]
-            target_id = my_grid["cell_ids"][
-                (wall_line + 1) * my_grid["width"] + wall_column
-            ]
             if is_breakable(my_grid, wall_line, wall_column, "horizontal"):
+                source_id = cells_ids[wall_line * maze_width + wall_column]
+                target_id = cells_ids[(wall_line + 1) * maze_width + wall_column]
                 my_grid["horizontal_walls"][wall_id] = False
                 my_grid = make_path(
                     my_grid,
                     source_id,
                     target_id,
                 )
-        selectable_walls.remove(f"{random_wall[0]}_{random_wall[1]}")
+        selectable_walls.remove(f"{wall_type}_{wall_id}")
     return my_grid
 
 
-start_time = process_time()
-the_grid = maze(3, 3)
-print_grid(
-    the_grid["width"],
-    the_grid["height"],
-    the_grid["vertical_walls"],
-    the_grid["horizontal_walls"],
-)
-print(f"Time : {process_time() - start_time} s")
+if __name__ == "__main__":
+    start_time = process_time()
+    the_grid = maze(100, 100)
+    pm.print_grid(
+        the_grid["width"],
+        the_grid["height"],
+        the_grid["vertical_walls"],
+        the_grid["horizontal_walls"],
+    )
+    print(f"Time : {process_time() - start_time} s")
