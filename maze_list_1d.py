@@ -1,4 +1,5 @@
 from random import shuffle
+from time import process_time
 
 from print_maze import print_grid
 
@@ -17,9 +18,9 @@ def get_id(ids, width, row, col):
     return ids[width * row + col]
 
 
-def is_breakable(grid, wall_row, wall_col, wall_type):
-    ids = grid["ids"]
-    width = grid["width"]
+def is_breakable(maze_grid, wall_row, wall_col, wall_type):
+    ids = maze_grid["ids"]
+    width = maze_grid["width"]
     if wall_type == "r":
         if get_id(ids, width, wall_row, wall_col) == get_id(
             ids, width, wall_row + 1, wall_col
@@ -33,12 +34,12 @@ def is_breakable(grid, wall_row, wall_col, wall_type):
     return True
 
 
-def rewrite_ids(grid, source_id, target_id):
+def rewrite_ids(maze_grid, source_id, target_id):
     new_ids = [
-        source_id if cell_id == target_id else cell_id for cell_id in grid["ids"]
+        source_id if cell_id == target_id else cell_id for cell_id in maze_grid["ids"]
     ]
-    grid["ids"] = new_ids
-    return grid
+    maze_grid["ids"] = new_ids
+    return maze_grid
 
 
 def all_walls(r_walls, c_walls):
@@ -78,5 +79,8 @@ def maze(maze_width, maze_height):
     return maze_grid
 
 
-grid = maze(40, 10)
-print_grid(grid["width"], grid["height"], grid["c_walls"], grid["r_walls"])
+if __name__ == "__main__":
+    start = process_time()
+    grid = maze(200, 200)
+    print_grid(grid["width"], grid["height"], grid["c_walls"], grid["r_walls"])
+    print(f"Time : {process_time() - start} s")
