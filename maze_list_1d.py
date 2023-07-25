@@ -43,12 +43,9 @@ def rewrite_ids(maze_grid, source_id, target_id):
 
 
 def all_walls(r_walls, c_walls):
-    walls = []
-    for wall in range(len(r_walls)):
-        walls.append(f"r{wall}")
-    for wall in range(len(c_walls)):
-        walls.append(f"c{wall}")
-    return walls
+    return [("r", wall_idx) for wall_idx in range(len(r_walls))] + [
+        ("c", wall_idx) for wall_idx in range(len(c_walls))
+    ]
 
 
 def maze(maze_width, maze_height):
@@ -57,8 +54,7 @@ def maze(maze_width, maze_height):
     shuffle(walls)
 
     for wall in walls:
-        wall_type = wall[0]
-        wall_idx = int(wall[1:])
+        wall_type, wall_idx = wall
         if wall_type == "r":
             wall_row, wall_col = divmod(wall_idx, maze_width)
             ids = maze_grid["ids"]
@@ -81,6 +77,6 @@ def maze(maze_width, maze_height):
 
 if __name__ == "__main__":
     start = process_time()
-    grid = maze(200, 200)
+    grid = maze(20, 5)
     print_grid(grid["width"], grid["height"], grid["c_walls"], grid["r_walls"])
     print(f"Time : {process_time() - start} s")
