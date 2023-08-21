@@ -1,7 +1,11 @@
-from random import shuffle
-from time import process_time
+from random import seed, shuffle
+from time import perf_counter
+from timeit import timeit
 
+from dijkstra import dijkstra
 from print_maze import print_grid
+
+# seed(1204)
 
 
 def gen_grid(width, height):
@@ -76,7 +80,21 @@ def maze(maze_width, maze_height):
 
 
 if __name__ == "__main__":
-    start = process_time()
-    grid = maze(20, 5)
+    start = perf_counter()
+    WIDTH = 10
+    HEIGHT = 10
+    REP = 1000
+    grid = maze(WIDTH, HEIGHT)
     print_grid(grid["width"], grid["height"], grid["c_walls"], grid["r_walls"])
-    print(f"Time : {process_time() - start} s")
+    solution = dijkstra(
+        0, grid["r_walls"], grid["c_walls"], grid["width"], grid["height"]
+    )
+    print(f"{solution = }")
+    print(f"Time : {perf_counter() - start:.3f} s")
+
+    timeit_func = "maze(WIDTH,HEIGHT)"
+    timeit_setup = "from __main__ import maze;from __main__ import WIDTH; from __main__ import HEIGHT"
+
+    print(
+        f"{REP} x maze({WIDTH}, {HEIGHT}) : {timeit(timeit_func, setup=timeit_setup, number=REP)}"
+    )
