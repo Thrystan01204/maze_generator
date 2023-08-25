@@ -1,5 +1,5 @@
 def get_neighbors(
-    cell_idx: int, c_walls: list[int], r_walls: list[int], width: int, height: int
+    cell_idx: int, c_walls: list[bool], r_walls: list[bool], width: int, height: int
 ) -> list[int]:
     neighbors = []
     cell_row, cell_col = divmod(cell_idx, width)
@@ -21,8 +21,8 @@ def get_neighbors(
 
 def dijkstra(
     start_cell_index: int,
-    r_walls: list[int],
-    c_walls: list[int],
+    r_walls: list[bool],
+    c_walls: list[bool],
     width: int,
     height: int,
 ) -> list[float]:
@@ -48,3 +48,25 @@ def dijkstra(
         queue.remove(current_cell_idx)
 
     return weights
+
+
+def get_path(
+    weights: list[float],
+    end_idx: int,
+    start_idx: int,
+    c_walls: list[bool],
+    r_walls: list[bool],
+    width: int,
+    height: int,
+) -> list[int]:
+    path = []
+    path.append(end_idx)
+    current_cell = end_idx
+
+    while current_cell != start_idx:
+        neighbors = get_neighbors(current_cell, c_walls, r_walls, width, height)
+
+        current_cell = min(neighbors, key=lambda weight: weights[weight])
+        path.append(current_cell)
+
+    return path
