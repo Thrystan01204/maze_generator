@@ -2,7 +2,7 @@ from random import seed, shuffle
 from time import perf_counter
 from timeit import timeit
 
-from dijkstra import dijkstra
+from dijkstra import dijkstra, get_path
 from print_maze import print_grid
 
 # seed(1204)
@@ -84,10 +84,21 @@ if __name__ == "__main__":
     WIDTH = 10
     HEIGHT = 10
     REP = 1000
+    START = 4
     grid = maze(WIDTH, HEIGHT)
     print_grid(grid["width"], grid["height"], grid["c_walls"], grid["r_walls"])
-    solution = dijkstra(
-        0, grid["r_walls"], grid["c_walls"], grid["width"], grid["height"]
+    weights = dijkstra(
+        START, grid["r_walls"], grid["c_walls"], grid["width"], grid["height"]
+    )
+    print(f"{weights = }")
+    solution = get_path(
+        weights,
+        0,
+        START,
+        grid["c_walls"],
+        grid["r_walls"],
+        grid["width"],
+        grid["height"],
     )
     print(f"{solution = }")
     print(f"Time : {perf_counter() - start:.3f} s")
