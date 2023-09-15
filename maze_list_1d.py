@@ -1,6 +1,7 @@
 from random import seed, shuffle
 from time import perf_counter
 from timeit import timeit
+from typing import List
 
 from dijkstra import dijkstra, get_path
 from print_maze import print_grid
@@ -8,7 +9,7 @@ from print_maze import print_grid
 # seed(1204)
 
 
-def gen_grid(width, height):
+def gen_grid(width: int, height: int) -> dict:
     return {
         "ids": list(range(width * height)),
         "r_walls": [True for _ in range(width * (height - 1))],
@@ -18,11 +19,11 @@ def gen_grid(width, height):
     }
 
 
-def get_id(ids, width, row, col):
+def get_id(ids: List[int], width: int, row: int, col: int) -> int:
     return ids[width * row + col]
 
 
-def is_breakable(maze_grid, wall_row, wall_col, wall_type):
+def is_breakable(maze_grid: dict, wall_row: int, wall_col: int, wall_type: str) -> bool:
     ids = maze_grid["ids"]
     width = maze_grid["width"]
     if wall_type == "r":
@@ -38,7 +39,7 @@ def is_breakable(maze_grid, wall_row, wall_col, wall_type):
     return True
 
 
-def rewrite_ids(maze_grid, source_id, target_id):
+def rewrite_ids(maze_grid: dict, source_id: int, target_id: int) -> dict:
     new_ids = [
         source_id if cell_id == target_id else cell_id for cell_id in maze_grid["ids"]
     ]
@@ -46,13 +47,13 @@ def rewrite_ids(maze_grid, source_id, target_id):
     return maze_grid
 
 
-def all_walls(r_walls, c_walls):
+def all_walls(r_walls: List[bool], c_walls: List[bool]) -> List[tuple]:
     return [("r", wall_idx) for wall_idx in range(len(r_walls))] + [
         ("c", wall_idx) for wall_idx in range(len(c_walls))
     ]
 
 
-def maze(maze_width, maze_height):
+def maze(maze_width: int, maze_height: int) -> dict:
     maze_grid = gen_grid(maze_width, maze_height)
     walls = all_walls(maze_grid["r_walls"], maze_grid["c_walls"])
     shuffle(walls)
